@@ -53,6 +53,7 @@ export default {
   components: {},
   data() {
     return {
+      mmm: "",
       focusId: 0, // 当前聚焦的输入框编号
       account: "",
       password: "",
@@ -60,6 +61,8 @@ export default {
       inputErr: { ac: "", pd: "", cpd: "" }, //输入框的错误提示
       btnType: 1 // 按钮文本，1为登录0为注册
     };
+  },
+  mounted() {
   },
   methods: {
     btnClick() {
@@ -81,7 +84,7 @@ export default {
           account: this.account,
           password: this.password
         });
-        console.log(register_res)
+        console.log(register_res);
       } else if (this.password != this.confirmPassword) {
         this.inputErr.cpd = "确认密码与密码不一致";
       }

@@ -8,7 +8,7 @@ const HomePage = () => import("@/pages/home-page")
 const Blogging = () => import("@/pages/blogging")
 const SearchResult = () => import("@/pages/search-result")
 const BlogDetail = () => import("@/pages/blog-detail")
-const Test = () => import("@/pages/test")
+const NotFound = () => import("@/pages/404")
 
 Vue.use(Router)
 
@@ -24,11 +24,6 @@ const router = new Router({
       component: Login
     },
     {
-      path: '/test',
-      name: 'test',
-      component: Test
-    },
-    {
       path: '/home',
       name: 'home',
       component: Home,
@@ -40,36 +35,50 @@ const router = new Router({
         {
           path: '/home/blog-view',  //主页
           name: 'blog-view',
-          component: BlogView
+          component: BlogView,
+          meta: { auth: true }
         },
         {
           path: '/home/home-page', // 个人中心
           name: 'home-page',
-          component: HomePage
+          component: HomePage,
+          meta: { auth: true }
         },
         {
           path: '/home/blogging',  // 写博客页面
           name: 'blogging',
-          component: Blogging
+          component: Blogging,
+          meta: { auth: true }
         },
         {
           path: '/home/search-result', // 搜索结果页面
           name: 'search-result',
-          component: SearchResult
+          component: SearchResult,
+          meta: { auth: true }
         },
         {
           path: '/home/blog-detail', // 博客详情页面
           name: 'blog-detail',
-          component: BlogDetail
+          component: BlogDetail,
+          meta: { auth: true }
         }
       ]
-    }
+    },
+    {
+      path: '*',
+      name: '404-not-found',
+      component: NotFound
+    },
   ]
 })
 
 // 全局路由守卫
 router.beforeEach((to, from, next) => {
-  console.log(from)
+  // if (to.meta.auth) {
+  //   next({ path: '/404' })
+  // } else {
+  //   next()
+  // }
   next()
 })
 
