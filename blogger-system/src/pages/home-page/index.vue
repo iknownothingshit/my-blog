@@ -15,7 +15,7 @@
         <h2 tabindex="0" @click="changeName" v-if="!changeControl">{{nickName}}</h2>
         <div class="user-name-changebox" v-if="changeControl">
           <input type="text" v-model="newName" />
-          <button class="save">保存</button>
+          <button class="save" @click="saveName">保存</button>
           <button class="cancel" @click="cancel">取消</button>
         </div>
       </div>
@@ -35,22 +35,33 @@ export default {
     return {
       showCropper: false, // 控制截图插件的显示与隐藏
       previewImg: "", // 截图照片
-      userHead: require("@/assets/user.jpg"),
-      nickName: "派大星",
+      userHead: "", // 用户头像
+      nickName: "", // 用户昵称
       newName: "", //修改后的昵称
       changeControl: false // 控制昵称修改框的显示
     };
+  },
+  mounted() {
+    // 初始化
+    let user = JSON.parse(sessionStorage.getItem("user"));
+    this.nickName = user.name;
+    this.userHead = user.userAvatars
+      ? "api/images/" + user.userAvatars
+      : require("@/assets/user.jpg");
   },
   methods: {
     //关闭截图插件并获取返回的数据
     closeCropper(data) {
       this.showCropper = false;
-      if (data === "cancel") {
-        // 若取消上传则清空input的值
+      if (data.msg === "cancel") {
+        // 若取消上传则单纯清空input的值
         this.$refs.head.value = "";
       } else {
-        this.userHead = data;
+        this.$refs.head.value = "";
+        this.userHead = data.base64;
+        this.uploadHead(data.file);
       }
+      this.$refs.headHover.style.opacity = 0;
     },
     // 点击打开截图插件
     openCropper() {
@@ -64,7 +75,35 @@ export default {
       };
     },
     // 点击上传头像
-    uploadHead() {},
+    async uploadHead(file) {
+      let form = new FormData();
+      form.append("file", file);
+      const head_res = await this.$_api.uploadImg(form);
+      if (head_res.data.code) {
+        let data = {};
+        data.account = JSON.parse(sessionStorage.getItem("user")).account;
+        data.type = 1;
+        data.head = head_res.data.data;
+        const upload_res = await this.$_api.updateMsg(data);
+        if (upload_res.data.code) {
+          this.$store.commit("setAvatars", "api/images/" + head_res.data.data);
+        }
+      }
+    },
+    // // 保存昵称
+    async saveName() {
+      if (this.newName) {
+        this.changeControl = false;
+        let data = {};
+        data.account = JSON.parse(sessionStorage.getItem("user")).account;
+        data.type = 2;
+        data.name = this.newName;
+        const name_res = await this.$_api.updateMsg(data);
+        if (name_res.data.code) {
+          this.nickName = this.newName;
+        }
+      }
+    },
     //隐藏昵称修改框
     cancel() {
       this.changeControl = false;
@@ -110,7 +149,7 @@ export default {
 
   &-head {
     position: absolute;
-    left: 10%;
+    left: 100px;
     top: -60px;
     height: 130px;
     width: 130px;
@@ -160,7 +199,7 @@ export default {
 
   &-name {
     position: absolute;
-    left: 28%;
+    left: 275px;
 
     &-changebox {
       width: 400px;

@@ -9,8 +9,6 @@ router.post('/login', UserController.login)
 
 router.post('/register', UserController.register)
 
-router.get('/logout', function (ctx, next) {
-  ctx.body = 'this is a users/bar response'
-})
+router.post('/uploadMsg', UserController.uploadMsg)
 
 module.exports = router

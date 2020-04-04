@@ -5,16 +5,16 @@ const tokens = require('../tools/token')
 class UserController {
     // 用户登录
     static async login(ctx) {
-        let req = ctx.request.body;
+        let req = ctx.request.body
         if (req.account && req.password) {
             let result = await User.userLogin(req.account, req.password)
             if (result.code) {
                 result.token = tokens.createToken(result)
             }
-            ctx.response.status = 200;
+            ctx.response.status = 200
             ctx.body = result
         } else {
-            ctx.response.status = 416;
+            ctx.response.status = 416
             ctx.body = {
                 message: '参数不全'
             }
@@ -23,16 +23,31 @@ class UserController {
 
     // 用户注册
     static async register(ctx) {
-        let req = ctx.request.body;
+        let req = ctx.request.body
         if (req.account && req.password) {
             let result = await User.userRegister(req.account, req.password)
             if (result.code) {
                 result.token = tokens.createToken(result)
             }
-            ctx.response.status = 200;
+            ctx.response.status = 200
             ctx.body = result
         } else {
-            ctx.response.status = 416;
+            ctx.response.status = 416
+            ctx.body = {
+                message: '参数不全'
+            }
+        }
+    }
+
+    // 用户上传头像
+    static async uploadMsg(ctx) {
+        let req = ctx.request.body
+        if (req.account) {
+            let result = await User.userUploadMsg(req)
+            ctx.response.status = 200
+            ctx.body = result
+        } else {
+            ctx.response.status = 416
             ctx.body = {
                 message: '参数不全'
             }

@@ -18,7 +18,7 @@
       </div>
       <button @click="go(2)">{{blogging}}</button>
       <div class="user" @blur="blur" tabindex="0">
-        <img src="@/assets/user.jpg" @click="checkUser()" />
+        <img :src="$store.state.avatars || defaultHead" @click="checkUser()" />
         <div class="user-hover" v-if="option">
           <div>
             <img src="@/assets/me.png" alt />
@@ -26,7 +26,7 @@
           </div>
           <div>
             <img src="@/assets/logout.png" alt />
-            <p>注销</p>
+            <p @click="logout">注销</p>
           </div>
         </div>
       </div>
@@ -39,12 +39,20 @@ export default {
   components: {},
   data() {
     return {
+      defaultHead: require("@/assets/user.jpg"),
       showResult: false, // 控制搜索历史框的弹出
       option: false, // 控制我的主页和注销按钮的弹出
       blogging: "写文章"
     };
   },
   methods: {
+    // 注销
+    logout() {
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+      this.$_api.setToken();
+      this.$router.push("/");
+    },
     // 搜索框聚焦时显示历史记录
     focus() {
       this.showResult = true;
@@ -237,10 +245,10 @@ export default {
 
         div {
           width: 100%;
-          margin: 10px 0;
           display: flex;
           align-items: center;
-          padding: 0 10px;
+          padding: 5px 10px;
+          margin: 5px 0;
 
           img {
             width: 15px !important;
@@ -258,7 +266,7 @@ export default {
         }
 
         div:hover {
-          background-color: #f6f6f6;
+          background-color: rgb(241, 241, 241);
         }
       }
     }

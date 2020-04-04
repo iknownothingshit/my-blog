@@ -6,7 +6,12 @@
       <div class="login-box-toggle-btn" @click="toggle">
         <p>{{btnType == 1?'注册':'登录'}}</p>
       </div>
-      <h3>{{btnType == 1?'用户登录':'用户注册'}}</h3>
+      <div class="login-box-title">
+        <h3 :style="{marginTop:btnType == 1?'-25px':'0'}">
+          用户注册
+          <br />用户登录
+        </h3>
+      </div>
       <div class="login-box-item">
         <input
           ref="account"
@@ -62,8 +67,7 @@ export default {
       btnType: 1 // 按钮文本，1为登录0为注册
     };
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     btnClick() {
       if (this.btnType) {
@@ -71,6 +75,19 @@ export default {
       } else {
         this.register();
       }
+    },
+    // 登录或者注册后将用户信息存储到vuex以及sessionStorage里，并前往主页
+    setMsg(res) {
+      sessionStorage.setItem("token", res.data.token);
+      sessionStorage.setItem("user", JSON.stringify(res.data.data));
+      this.$_api.setToken(res.data.token);
+      if (res.data.data.userAvatars) {
+        this.$store.commit(
+          "setAvatars",
+          "api/images/" + res.data.data.userAvatars
+        );
+      }
+      this.$router.push("/home");
     },
     //注册
     async register() {
@@ -84,7 +101,11 @@ export default {
           account: this.account,
           password: this.password
         });
-        console.log(register_res);
+        if (register_res.data.code) {
+          this.setMsg(register_res);
+        } else {
+          this.inputErr.ac = "用户名已存在";
+        }
       } else if (this.password != this.confirmPassword) {
         this.inputErr.cpd = "确认密码与密码不一致";
       }
@@ -97,7 +118,7 @@ export default {
           password: this.password
         });
         if (login_res.data.code) {
-          this.$router.push("/home");
+          this.setMsg(login_res);
         } else {
           if (login_res.data.message == "密码不正确") {
             this.inputErr.pd = "密码不正确";
@@ -124,6 +145,7 @@ export default {
       this.account = "";
       this.password = "";
       this.confirmPassword = "";
+      this.inputErr = { ac: "", pd: "", cpd: "" };
       let inputs = [
         this.$refs.account,
         this.$refs.password,
@@ -188,8 +210,16 @@ export default {
     }
   }
 
+  &-title {
+    width: 70%;
+    margin: auto;
+    height: 25px;
+    overflow: hidden;
+  }
+
   h3 {
-    margin: 0;
+    text-align: left;
+    transition: margin-top 0.4s;
   }
 
   .confirmPsw {

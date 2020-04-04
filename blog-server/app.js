@@ -11,6 +11,7 @@ const filter = require('./tools/filter')
 // 获取路由
 const articals = require('./routes/articals')
 const users = require('./routes/users')
+const images = require('./routes/images')
 
 // error handler
 onerror(app)
@@ -35,12 +36,14 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
 
-// 过滤无token请求
-app.use(filter)
+// // 过滤无token请求
+// app.use(filter)
 
 // routes
-app.use(articals.routes())
-app.use(users.routes())
+app
+  .use(articals.routes())
+  .use(users.routes())
+  .use(images.routes())
 
 // error-handling
 app.on('error', (err, ctx) => {

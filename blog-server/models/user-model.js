@@ -53,6 +53,33 @@ class User {
         }
         return obj
     }
+
+    //用户更新头像或昵称
+    static async userUploadMsg(req) {
+        let obj = {}
+        if (req.type == 1 && req.head) {
+            const res = await UserModel.update({ userAvatars: req.head }, { where: { account: req.account } })
+            if (res[0]) {
+                obj.code = 1
+                obj.message = '上传成功'
+            } else {
+                obj.code = 0
+                obj.message = '上传失败(上传了同一头像或服务器内部错误)'
+            }
+            return obj
+        } else if (req.type == 2 && req.name) {
+            const res = await UserModel.update({ name: req.name }, { where: { account: req.account } })
+            if (res[0]) {
+                obj.code = 1
+                obj.message = '上传成功'
+            } else {
+                obj.code = 0
+                obj.message = '上传失败'
+            }
+            return obj
+        }
+
+    }
 }
 
 module.exports = User

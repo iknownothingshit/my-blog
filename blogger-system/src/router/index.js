@@ -74,12 +74,16 @@ const router = new Router({
 
 // 全局路由守卫
 router.beforeEach((to, from, next) => {
-  // if (to.meta.auth) {
-  //   next({ path: '/404' })
-  // } else {
-  //   next()
-  // }
-  next()
+  if (to.meta.auth) {
+    if (sessionStorage.getItem('token')) {
+      console.log(sessionStorage.getItem('token'))
+      next();
+    } else {
+      next({ path: '/' });
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
