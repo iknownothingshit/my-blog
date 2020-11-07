@@ -1,23 +1,15 @@
 <template>
   <!-- 博客基本信息框 -->
   <div class="blog">
-    <h3 @click="check">你都见过什么奇奇怪怪的网站</h3>
+    <h3 @click="check">{{ artical.text_title }}</h3>
     <section class="blog-content">
       <img src="@/assets/bg.jpg" alt />
       <div>
-        阿里妈妈MUX倾力打造的矢量图标管理、交流平台。
-        设计师将图标上传到Iconfont平台，用户可以自定义下载多种格式的icon，平台也可将图标转换为字体，便于前端工程师自由调整与调用。
-        ©ALIMAMA MUX, powered by alimama THX.
-        转载内容版权归作者及来源网站所有，本站原创内容转载请注明来源，商业媒体及纸媒请先联系：zy99945@alibaba-inc.com
-        法律声明浙ICP备09109183号-25浙公网安备 33010002000124号阿里妈妈MUX倾力打造的矢量图标管理、交流平台。
-        设计师将图标上传到Iconfont平台，用户可以自定义下载多种格式的icon，平台也可将图标转换为字体，便于前端工程师自由调整与调用。
-        ©ALIMAMA MUX, powered by alimama THX.
-        转载内容版权归作者及来源网站所有，本站原创内容转载请注明来源，商业媒体及纸媒请先联系：zy99945@alibaba-inc.com
-        法律声明浙ICP备09109183号-25浙公网安备 33010002000124号
+        {{ artical.text }}
       </div>
     </section>
     <section class="blog-btns">
-      <button>▲赞 5599</button>
+      <button>▲赞 {{ artical.praiseNum }}</button>
       <div>
         <img src="@/assets/comment.png" alt />
         0条评论
@@ -29,13 +21,30 @@
 <script>
 export default {
   components: {},
+  props: {
+    artical: {
+      type: Object,
+      default: () => {
+        return {
+          text: "这是一个博客",
+          text_title: "这是一个博客",
+          authorId: 0,
+          praiseNum: 0,
+          comment_num: 0
+        };
+      }
+    }
+  },
   data() {
     return {};
   },
   methods: {
     // 查看博客详情
     check() {
-      this.$router.push("/home/blog-detail");
+      this.$router.push({
+        name: "blog-detail",
+        params: { blog: this.artical }
+      });
     }
   }
 };

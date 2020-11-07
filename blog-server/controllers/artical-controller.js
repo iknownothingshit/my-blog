@@ -1,8 +1,33 @@
 // 获取请求内容并调用对应的model方法，然后把处理完的数据响应回去
-const User = require('../models/user-model')
+const Artical = require('../models/artical-model')
 const tokens = require('../tools/token')
 
-class UserController {
+class ArticalController {
+    //文章上传
+    static async blogUpload(ctx) {
+        let req = ctx.request.body
+        await Artical.blogUpload(req)
+        ctx.response.status = 200
+        ctx.body = {
+            message: '发表成功'
+        }
+    }
+
+    // 获取文章
+    static async fetchArticals(ctx) {
+        let req = ctx.request.body;
+        if (req) {
+            let res = await Artical.fetchArticals(req.page);
+            ctx.response.status = 200;
+            ctx.body = res;
+        } else {
+            ctx.response.status = 416;
+            ctx.body = {
+                message: '参数不全'
+            };
+        }
+    }
+
     // 用户登录
     static async login(ctx) {
         let req = ctx.request.body
@@ -53,21 +78,6 @@ class UserController {
             }
         }
     }
-
-    // 获取用户信息
-    static async getUser(ctx) {
-        let req = ctx.request.body;
-        if (req.id) {
-            let res = await User.getUser(req.id);
-            ctx.response.status = 200;
-            ctx.response.body = res;
-        } else {
-            ctx.response.status = 416
-            ctx.body = {
-                message: '参数不全'
-            }
-        }
-    }
 }
 
-module.exports = UserController
+module.exports = ArticalController

@@ -1,22 +1,12 @@
-const router = require('koa-router')()
-router.prefix("/artical")
+const router = require('koa-router')();
+router.prefix("/artical");
 
 // 文章相关的请求路由判断
 
-router.get('/', async (ctx, next) => {
-  await ctx.render('index', {
-    title: 'Hello Koa 2!'
-  })
-})
+const ArticalController = require('../controllers/artical-controller');
 
-router.get('/string', async (ctx, next) => {
-  ctx.body = 'koa2 string'
-})
+router.post('/uploadBlog', ArticalController.blogUpload);
 
-router.get('/json', async (ctx, next) => {
-  ctx.body = {
-    title: 'koa2 json'
-  }
-})
+router.post('/fetchArticals', ArticalController.fetchArticals);
 
-module.exports = router
+module.exports = router;

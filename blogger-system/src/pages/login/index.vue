@@ -4,10 +4,10 @@
     <img src="@/assets/bg.jpg" alt />
     <section class="login-box" ref="loginBox">
       <div class="login-box-toggle-btn" @click="toggle">
-        <p>{{btnType == 1?'注册':'登录'}}</p>
+        <p>{{ btnType == 1 ? "注册" : "登录" }}</p>
       </div>
       <div class="login-box-title">
-        <h3 :style="{marginTop:btnType == 1?'-25px':'0'}">
+        <h3 :style="{ marginTop: btnType == 1 ? '-25px' : '0' }">
           用户注册
           <br />用户登录
         </h3>
@@ -18,11 +18,14 @@
           type="text"
           placeholder="用户名"
           v-model="account"
-          @focus="focus(1,$event,'ac')"
+          @focus="focus(1, $event, 'ac')"
           @blur="blur($event)"
         />
-        <div class="login-box-item-bottomLine" :style="{width:(focusId == 1?'100%':'0')}"></div>
-        <label>{{inputErr.ac}}</label>
+        <div
+          class="login-box-item-bottomLine"
+          :style="{ width: focusId == 1 ? '100%' : '0' }"
+        ></div>
+        <label>{{ inputErr.ac }}</label>
       </div>
       <div class="login-box-item">
         <input
@@ -30,11 +33,14 @@
           type="password"
           placeholder="密码"
           v-model="password"
-          @focus="focus(2,$event,'pd')"
+          @focus="focus(2, $event, 'pd')"
           @blur="blur($event)"
         />
-        <div class="login-box-item-bottomLine" :style="{width:(focusId == 2?'100%':'0')}"></div>
-        <label>{{inputErr.pd}}</label>
+        <div
+          class="login-box-item-bottomLine"
+          :style="{ width: focusId == 2 ? '100%' : '0' }"
+        ></div>
+        <label>{{ inputErr.pd }}</label>
       </div>
       <div class="login-box-item confirmPsw" ref="confirmPsw">
         <input
@@ -42,13 +48,16 @@
           type="password"
           v-model="confirmPassword"
           placeholder="确认密码"
-          @focus="focus(3,$event,'cpd')"
+          @focus="focus(3, $event, 'cpd')"
           @blur="blur($event)"
         />
-        <div class="login-box-item-bottomLine" :style="{width:(focusId == 3?'100%':'0')}"></div>
-        <label>{{inputErr.cpd}}</label>
+        <div
+          class="login-box-item-bottomLine"
+          :style="{ width: focusId == 3 ? '100%' : '0' }"
+        ></div>
+        <label>{{ inputErr.cpd }}</label>
       </div>
-      <button @click="btnClick">{{btnType == 1?'登录':'注册'}}</button>
+      <button @click="btnClick">{{ btnType == 1 ? "登录" : "注册" }}</button>
     </section>
   </div>
 </template>
@@ -67,8 +76,18 @@ export default {
       btnType: 1 // 按钮文本，1为登录0为注册
     };
   },
-  mounted() {},
+  mounted() {
+    window.addEventListener("keydown", e => {
+      if (e.keyCode === 13) {
+        this.btnClick();
+      }
+    });
+  },
+  destroyed() {
+    window.removeEventListener("keydown");
+  },
   methods: {
+    // 点击登录、注册按钮
     btnClick() {
       if (this.btnType) {
         this.login();

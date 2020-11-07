@@ -11,4 +11,6 @@ router.post('/register', UserController.register)
 
 router.post('/uploadMsg', UserController.uploadMsg)
 
+router.post('/getUser', UserController.getUser)
+
 module.exports = router

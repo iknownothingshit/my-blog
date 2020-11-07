@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '@/store/store'
 
 const Home = () => import("@/pages/home")
 const Login = () => import("@/pages/login")
@@ -74,16 +75,24 @@ const router = new Router({
 
 // 全局路由守卫
 router.beforeEach((to, from, next) => {
-  if (to.meta.auth) {
-    if (sessionStorage.getItem('token')) {
-      console.log(sessionStorage.getItem('token'))
-      next();
-    } else {
-      next({ path: '/' });
-    }
+  // 判断是否前往博客编辑页
+  if (to.path === '/home/blogging') {
+    store.commit('setIsBlogging', true);
   } else {
-    next()
+    store.commit('setIsBlogging', false);
   }
+
+  next()
+  // if (to.meta.auth) {
+  //   if (sessionStorage.getItem('token')) {
+  //     console.log(sessionStorage.getItem('token'))
+  //     next();
+  //   } else {
+  //     next({ path: '/' });
+  //   }
+  // } else {
+  //   next()
+  // }
 })
 
 export default router

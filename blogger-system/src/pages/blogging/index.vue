@@ -1,10 +1,16 @@
 <template>
   <!-- 写博客页面 -->
   <div class="blogging">
-    <input type="text" maxlength="50" v-model="title" placeholder="请输入标题（最多50个字）" class="title" />
+    <input
+      type="text"
+      maxlength="50"
+      v-model="title"
+      placeholder="请输入标题（最多50个字）"
+      class="title"
+    />
     <section class="blogging-edit" ref="editor">
       <mavon-editor
-        :class="{'editor':true,'slideControl':isToolBarReachTop}"
+        :class="{ editor: true, slideControl: isToolBarReachTop }"
         :toolbars="toolbars"
         @imgAdd="imgAdd"
         v-model="blogContent"
@@ -64,20 +70,19 @@ export default {
   },
   mounted() {
     window.addEventListener("scroll", this.scrollHandler);
+    this.$bus.$on("uploadBlog", this.uploadBlog);
   },
   destroyed() {
     window.removeEventListener("scroll", this.scrollHandler);
   },
   methods: {
     // 编辑器里的图片上传
-    imgAdd(pos, $file) {
-      // let read = new FileReader();
-      // read.readAsDataURL($file);
-      // let that = this;
-      // read.onload = function() {
-      //   that.test = this.result;
-      // };
-      // https://github.com/hinesboy/mavonEditor/blob/master/doc/cn/upload-images.md
+    async imgAdd(pos, $file) {
+      let formData = new FormData();
+      formData.append("file", $file);
+      const img_res =  await this.$_api.uploadImg(formData);
+      console.log(img_res);
+      // 说明文档：https://github.com/hinesboy/mavonEditor/blob/master/doc/cn/upload-images.md
     },
     scrollHandler(e) {
       // 下拉时将工具栏固定在顶部
@@ -86,6 +91,17 @@ export default {
         this.isToolBarReachTop = true;
       } else {
         this.isToolBarReachTop = false;
+      }
+    },
+    // 发表文章
+    uploadBlog() {
+      let userMsg = JSON.parse(sessionStorage.getItem("user"));
+      if (this.title && this.blogContent) {
+        this.$_api.uploadBlog({
+          text_title: this.title,
+          text: this.blogContent,
+          authorId: userMsg.userId
+        });
       }
     }
   }

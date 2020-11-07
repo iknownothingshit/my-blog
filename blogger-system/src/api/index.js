@@ -43,6 +43,30 @@ const api = {
         }).catch(err => {
             return Promise.reject(err)
         })
+    },
+    // 获取文章
+    fetchArticals(data) {
+        return http.post(`api/artical/fetchArticals`, data).then(res => {
+            return Promise.resolve(res)
+        }).catch(err => {
+            return Promise.reject(err)
+        })
+    },
+    // 发表文章
+    uploadBlog(data) {
+        return http.post(`api/artical/uploadBlog`, data).then(res => {
+            return Promise.resolve(res)
+        }).catch(err => {
+            return Promise.reject(err)
+        })
+    },
+    // 获取用户信息
+    getUser(data) {
+        return http.post(`api/user/getUser`, data).then(res => {
+            return Promise.resolve(res)
+        }).catch(err => {
+            return Promise.reject(err)
+        })
     }
 }
 

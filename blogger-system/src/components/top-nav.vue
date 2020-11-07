@@ -16,7 +16,9 @@
           <p>搜索结果</p>
         </div>
       </div>
-      <button @click="go(2)">{{blogging}}</button>
+      <button @click="go(2)">
+        {{ $store.state.isBlogging ? "发表" : "写博客" }}
+      </button>
       <div class="user" @blur="blur" tabindex="0">
         <img :src="$store.state.avatars || defaultHead" @click="checkUser()" />
         <div class="user-hover" v-if="option">
@@ -41,8 +43,7 @@ export default {
     return {
       defaultHead: require("@/assets/user.jpg"),
       showResult: false, // 控制搜索历史框的弹出
-      option: false, // 控制我的主页和注销按钮的弹出
-      blogging: "写文章"
+      option: false // 控制我的主页和注销按钮的弹出
     };
   },
   methods: {
@@ -71,22 +72,28 @@ export default {
       switch (id) {
         case 0:
           this.$router.push("/home");
-          this.blogging = "写文章";
           break;
         case 1:
           this.$router.push("/home/search-result");
           this.blur();
           break;
         case 2:
-          this.$router.push("/home/blogging");
-          this.blogging = "发表";
+          if (this.$store.state.isBlogging) {
+            this.uploadBlog();
+          } else {
+            this.$router.push("/home/blogging");
+          }
           break;
         case 3:
           this.$router.push("/home/home-page");
-          this.blogging = "写文章";
           this.option = false;
           break;
       }
+    },
+    // 发表文章，用于触发博客编辑页面的发表事件
+    uploadBlog() {
+      // 此事件巴士将前往编辑界面
+      this.$bus.$emit("uploadBlog");
     }
   }
 };
@@ -209,6 +216,7 @@ export default {
     }
 
     .user {
+      border-radius: 10px;
       width: 40px;
       position: relative;
       outline: none;
@@ -240,6 +248,7 @@ export default {
         background-color: white;
         z-index: 2;
         border: 1px solid #ececec;
+        border-radius: 5px;
         display: flex;
         flex-wrap: wrap;
 

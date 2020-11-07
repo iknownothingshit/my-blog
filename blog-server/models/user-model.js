@@ -80,6 +80,21 @@ class User {
         }
 
     }
+
+    // 获取用户信息
+    static async getUser(id) {
+        let obj = {};
+        const res = await UserModel.findOne({ where: { userId: id } });
+        obj.data = res;
+        if (res) {
+            obj.code = 1;
+            obj.message = '获取用户信息成功';
+        } else {
+            obj.code = 0;
+            obj.message = '获取用户信息失败';
+        }
+        return obj;
+    }
 }
 
 module.exports = User

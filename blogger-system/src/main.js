@@ -16,6 +16,8 @@ import vueCropper from 'vue-cropper' // 截图插件
 
 Vue.config.productionTip = false
 
+Vue.prototype.$bus = new Vue()
+
 registerAllComponents(Vue)
 Vue.use(mavonEditor)
 Vue.use(vueCropper)

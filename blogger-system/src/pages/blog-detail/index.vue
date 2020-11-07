@@ -2,8 +2,8 @@
   <!-- 博客具体内容页 -->
   <div class="detail">
     <section class="detail-title">
-      <h2>你用过哪些好看到炸裂的壁纸？</h2>
-      <button>▲赞 5599</button>
+      <h2>{{ blog.text_title }}</h2>
+      <button>▲赞 {{ blog.praiseNum }}</button>
       <div @click="openComBox">
         <img src="@/assets/comment.png" alt />
         添加评论
@@ -13,7 +13,7 @@
     <section class="detail-content">
       <mavon-editor
         class="editor"
-        v-model="blogContent"
+        v-model="blog.text"
         defaultOpen="preview"
         :toolbarsFlag="false"
         :subfield="false"
@@ -21,8 +21,15 @@
       />
       <div class="author">
         关于作者
-        <img src="@/assets/user.jpg" alt />
-        <p>新建文件夹</p>
+        <img
+          :src="
+            user.userAvatars
+              ? `api/images/${user.userAvatars}`
+              : '@/assets/user.jpg'
+          "
+          alt
+        />
+        <p>{{ user.name }}</p>
       </div>
     </section>
   </div>
@@ -33,9 +40,25 @@ export default {
   components: {},
   data() {
     return {
-      blogContent: "",
-      showComment: false
+      blog: {},
+      showComment: false, // 控制评论框的显示和隐藏
+      user: {}
     };
+  },
+  async mounted() {
+    document.scrollingElement.scrollTop = 0; //让页面滚动到最顶部
+    this.blog = this.$route.params.blog;
+    // 这个if是防止路由前进后退时丢失文章信息
+    if (!this.blog) {
+      this.blog = JSON.parse(sessionStorage.getItem("curArtical"));
+    } else {
+      sessionStorage.setItem("curArtical", JSON.stringify(this.blog));
+    }
+    let res = await this.$_api.getUser({ id: this.blog.authorId });
+    console.log("本文作者：", res);
+    if (res.data.code) {
+      this.user = res.data.data;
+    }
   },
   methods: {
     //打开评论框
