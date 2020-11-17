@@ -73,20 +73,22 @@ export default {
       password: "",
       confirmPassword: "",
       inputErr: { ac: "", pd: "", cpd: "" }, //输入框的错误提示
-      btnType: 1 // 按钮文本，1为登录0为注册
+      btnType: 1, // 按钮文本，1为登录0为注册
     };
   },
   mounted() {
-    window.addEventListener("keydown", e => {
+    window.addEventListener("keydown", this.listenEnter);
+  },
+  destroyed() {
+    window.removeEventListener("keydown", this.listenEnter);
+  },
+  methods: {
+    // 监听回车
+    listenEnter(e) {
       if (e.keyCode === 13) {
         this.btnClick();
       }
-    });
-  },
-  destroyed() {
-    window.removeEventListener("keydown");
-  },
-  methods: {
+    },
     // 点击登录、注册按钮
     btnClick() {
       if (this.btnType) {
@@ -118,7 +120,7 @@ export default {
       ) {
         const register_res = await this.$_api.register({
           account: this.account,
-          password: this.password
+          password: this.password,
         });
         if (register_res.data.code) {
           this.setMsg(register_res);
@@ -134,7 +136,7 @@ export default {
       if (this.account && this.password) {
         const login_res = await this.$_api.login({
           account: this.account,
-          password: this.password
+          password: this.password,
         });
         if (login_res.data.code) {
           this.setMsg(login_res);
@@ -168,7 +170,7 @@ export default {
       let inputs = [
         this.$refs.account,
         this.$refs.password,
-        this.$refs.confirmPassword
+        this.$refs.confirmPassword,
       ];
       for (let e of inputs) {
         e.className = "";
@@ -191,8 +193,8 @@ export default {
         target.className = "redPhd";
         target.placeholder = "请输入" + target.placeholder;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="less" scoped>

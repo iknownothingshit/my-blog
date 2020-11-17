@@ -67,7 +67,39 @@ const api = {
         }).catch(err => {
             return Promise.reject(err)
         })
-    }
+    },
+    // 获取用户的文章
+    fetchUserArticals(data) {
+        return http.post(`api/artical/fetchUserArticals`, data).then(res => {
+            return Promise.resolve(res)
+        }).catch(err => {
+            return Promise.reject(err)
+        })
+    },
+    // 点赞文章
+    praiseUp(data) {
+        return http.post(`api/artical/praise`, data).then(res => {
+            return Promise.resolve(res)
+        }).catch(err => {
+            return Promise.reject(err)
+        })
+    },
+    // 发表评论
+    comment(data) {
+        return http.post(`api/comment/comment`, data).then(res => {
+            return Promise.resolve(res)
+        }).catch(err => {
+            return Promise.reject(err)
+        })
+    },
+    // 获取评论
+    fetchComments(data) {
+        return http.post(`api/comment/fetchComments`, data).then(res => {
+            return Promise.resolve(res)
+        }).catch(err => {
+            return Promise.reject(err)
+        })
+    },
 }
 
 //混入全局实例中

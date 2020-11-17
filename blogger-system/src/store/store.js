@@ -8,9 +8,14 @@ const store = new Vuex.Store({
         avatars: '', // 用户的头像
         userMsg: '', // 用户信息
         isBlogging: false, // 是否处于博客编辑界面
+        hidSidebar: false,// 是否隐藏侧边栏
         token: '' // 用于后台验证的token
     },
     mutations: {
+        // 侧边栏
+        setHidSidebar(state, hidSidebar) {
+            state.hidSidebar = hidSidebar;
+        },
         // 更新头像
         setAvatars(state, avatars) {
             state.avatars = avatars;

@@ -92,6 +92,7 @@ export default {
     },
     // 发表文章，用于触发博客编辑页面的发表事件
     uploadBlog() {
+      console.log("abc");
       // 此事件巴士将前往编辑界面
       this.$bus.$emit("uploadBlog");
     }
@@ -136,9 +137,11 @@ export default {
       @keyframes fade {
         from {
           opacity: 0;
+          transform: translateY(-15px);
         }
         to {
           opacity: 1;
+          transform: translateY(0);
         }
       }
 

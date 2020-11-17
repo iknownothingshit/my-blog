@@ -2,7 +2,10 @@
   <!-- 主页容器 -->
   <div class="home">
     <topNav />
-    <router-view />
+    <div style="display: flex; width: 100%">
+      <router-view />
+      <sidebar v-if="!$store.state.hidSidebar"/>
+    </div>
   </div>
 </template>
 
@@ -12,7 +15,7 @@ export default {
   data() {
     return {};
   },
-  methods: {}
+  methods: {},
 };
 </script>
 <style scoped>

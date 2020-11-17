@@ -3,13 +3,15 @@
   <div class="detail">
     <section class="detail-title">
       <h2>{{ blog.text_title }}</h2>
-      <button>▲赞 {{ blog.praiseNum }}</button>
+      <button :class="{ praised: blog.isPraise }" @click="praiseUp">
+        ▲ 赞 {{ blog.praiseNum }}
+      </button>
       <div @click="openComBox">
         <img src="@/assets/comment.png" alt />
-        添加评论
+        {{ allComments.length ? `${allComments.length}条评论` : "添加评论" }}
       </div>
     </section>
-    <commentBox v-if="showComment" />
+    <commentBox v-if="showComment" :allComments="allComments" />
     <section class="detail-content">
       <mavon-editor
         class="editor"
@@ -23,13 +25,13 @@
         关于作者
         <img
           :src="
-            user.userAvatars
-              ? `api/images/${user.userAvatars}`
+            author.userAvatars
+              ? `api/images/${author.userAvatars}`
               : '@/assets/user.jpg'
           "
           alt
         />
-        <p>{{ user.name }}</p>
+        <p>{{ author.name }}</p>
       </div>
     </section>
   </div>
@@ -40,27 +42,38 @@ export default {
   components: {},
   data() {
     return {
-      blog: {},
+      blog: {}, // 文章
       showComment: false, // 控制评论框的显示和隐藏
-      user: {}
+      author: {}, // 当前文章作者
+      user: "", // 当前用户信息
+      allComments: [], // 当前文章的所有评论
     };
   },
   async mounted() {
     document.scrollingElement.scrollTop = 0; //让页面滚动到最顶部
-    this.blog = this.$route.params.blog;
-    // 这个if是防止路由前进后退时丢失文章信息
-    if (!this.blog) {
-      this.blog = JSON.parse(sessionStorage.getItem("curArtical"));
-    } else {
-      sessionStorage.setItem("curArtical", JSON.stringify(this.blog));
-    }
-    let res = await this.$_api.getUser({ id: this.blog.authorId });
-    console.log("本文作者：", res);
-    if (res.data.code) {
-      this.user = res.data.data;
-    }
+    this.user = JSON.parse(sessionStorage.getItem("user"));
+    this.init();
   },
   methods: {
+    // 初始化
+    async init() {
+      this.blog = this.$route.params.blog;
+      // 这个if是防止路由前进后退时丢失文章信息
+      if (!this.blog) {
+        this.blog = JSON.parse(sessionStorage.getItem("curArtical"));
+      } else {
+        sessionStorage.setItem("curArtical", JSON.stringify(this.blog));
+      }
+      // 获取文章作者信息
+      const author_res = await this.$_api.getUser({ id: this.blog.authorId });
+      console.log("本文作者：", author_res);
+      if (author_res.data.code) {
+        this.author = author_res.data.data;
+      }
+
+      // 获取文章评论
+      this.fetchComments();
+    },
     //打开评论框
     openComBox() {
       this.showComment = true;
@@ -68,11 +81,58 @@ export default {
     // 关闭评论框
     closeComment() {
       this.showComment = false;
-    }
-  }
+    },
+    // 点赞文章
+    async praiseUp() {
+      if (this.blog.isPraise) return;
+      const res = await this.$_api.praiseUp({
+        userId: this.user.userId,
+        blogId: this.blog.blogId,
+      });
+      if (res.data.code) {
+        this.blog.isPraise = true;
+        this.blog.praiseNum++;
+      } else {
+        console.log("完了点赞这里出问题了");
+      }
+    },
+    // 获取文章评论
+    async fetchComments() {
+      const comments_res = await this.$_api.fetchComments({
+        blogId: this.blog.blogId,
+      });
+      if (comments_res.data.code) {
+        this.allComments = comments_res.data.data.rows;
+      } else {
+        console.log("获取评论出问题啦");
+      }
+    },
+    // 发表评论
+    async comment(data) {
+      if (!data) return;
+      const res = await this.$_api.comment({
+        userName: this.user.name,
+        userAvatars: this.user.userAvatars,
+        text: data,
+        userId: this.user.userId,
+        blogId: this.blog.blogId,
+      });
+      if (res.data.code) {
+        this.fetchComments();
+      } else {
+        console.log("发表评论出问题了");
+      }
+    },
+  },
 };
 </script>
 <style lang="less" scoped>
+.praised {
+  background-color: #0070f8 !important;
+  color: white !important;
+  width: 8% !important;
+}
+
 .detail {
   width: 100%;
 
@@ -132,6 +192,7 @@ export default {
     .author {
       background-color: white;
       width: 18%;
+      max-height: 300px;
       margin-left: 2%;
       display: flex;
       flex-direction: column;

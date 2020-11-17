@@ -9,4 +9,8 @@ router.post('/uploadBlog', ArticalController.blogUpload);
 
 router.post('/fetchArticals', ArticalController.fetchArticals);
 
+router.post('/fetchUserArticals', ArticalController.fetchUserArticals);
+
+router.post('/praise', ArticalController.praise);
+
 module.exports = router;

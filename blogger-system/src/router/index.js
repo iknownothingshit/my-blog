@@ -82,6 +82,15 @@ router.beforeEach((to, from, next) => {
     store.commit('setIsBlogging', false);
   }
 
+  // 判断前往的是否是无需显示侧边栏的页面
+  if (to.path === '/home/blogging' || to.path === '/home/blog-detail') {
+    console.log('a')
+    store.commit('setHidSidebar', true);
+  } else {
+    store.commit('setHidSidebar', false);
+  }
+
+
   next()
   // if (to.meta.auth) {
   //   if (sessionStorage.getItem('token')) {

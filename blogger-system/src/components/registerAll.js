@@ -3,12 +3,14 @@ import topNav from './top-nav'
 import blog from './blog'
 import cropper from './cropper'
 import commentBox from './commentBox'
+import sidebar from './sidebar'
 
 const components = {
     topNav,
     blog,
     cropper,
-    commentBox
+    commentBox,
+    sidebar
 }
 
 export default function registerAllComponents(instance) {

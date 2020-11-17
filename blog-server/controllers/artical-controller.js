@@ -5,11 +5,16 @@ const tokens = require('../tools/token')
 class ArticalController {
     //文章上传
     static async blogUpload(ctx) {
-        let req = ctx.request.body
-        await Artical.blogUpload(req)
-        ctx.response.status = 200
-        ctx.body = {
-            message: '发表成功'
+        let req = ctx.request.body;
+        if (req) {
+            const res = await Artical.blogUpload(req);
+            ctx.response.status = 200;
+            ctx.body = res;
+        } else {
+            ctx.response.status = 416;
+            ctx.body = {
+                message: '参数不全'
+            };
         }
     }
 
@@ -28,16 +33,13 @@ class ArticalController {
         }
     }
 
-    // 用户登录
-    static async login(ctx) {
-        let req = ctx.request.body
-        if (req.account && req.password) {
-            let result = await User.userLogin(req.account, req.password)
-            if (result.code) {
-                result.token = tokens.createToken(result)
-            }
-            ctx.response.status = 200
-            ctx.body = result
+    // 获取用户文章
+    static async fetchUserArticals(ctx) {
+        let req = ctx.request.body;
+        if (req.authorId) {
+            let res = await Artical.fetchUserArticals(req);
+            ctx.response.status = 200;
+            ctx.body = res;
         } else {
             ctx.response.status = 416
             ctx.body = {
@@ -46,37 +48,20 @@ class ArticalController {
         }
     }
 
-    // 用户注册
-    static async register(ctx) {
-        let req = ctx.request.body
-        if (req.account && req.password) {
-            let result = await User.userRegister(req.account, req.password)
-            if (result.code) {
-                result.token = tokens.createToken(result)
-            }
-            ctx.response.status = 200
-            ctx.body = result
+    // 点赞文章
+    static async praise(ctx) {
+        let req = ctx.request.body;
+        if (req) {
+            let res = await Artical.praise(req);
+            ctx.response.status = 200;
+            ctx.body = res;
         } else {
             ctx.response.status = 416
             ctx.body = {
                 message: '参数不全'
             }
         }
-    }
 
-    // 用户上传头像
-    static async uploadMsg(ctx) {
-        let req = ctx.request.body
-        if (req.account) {
-            let result = await User.userUploadMsg(req)
-            ctx.response.status = 200
-            ctx.body = result
-        } else {
-            ctx.response.status = 416
-            ctx.body = {
-                message: '参数不全'
-            }
-        }
     }
 }
 

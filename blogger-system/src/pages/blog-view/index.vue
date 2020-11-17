@@ -2,9 +2,8 @@
   <!-- 主页 -->
   <div class="blog-view">
     <img src="@/assets/bg01.jpg" alt class="bg-horizontal" />
-    <img src="@/assets/bg02.jpg" alt class="bg-vertical" />
     <section class="blog-view-content">
-      <blog v-for="(e, i) in articals" :key="i" :artical="e" />
+      <blog v-for="(e, i) in articals" :key="i" :artical="e" :delay="i" />
     </section>
   </div>
 </template>
@@ -14,28 +13,21 @@ export default {
   components: {},
   data() {
     return {
-      articals: [] // 文章
+      articals: [], // 文章
     };
   },
   async mounted() {
     const res = await this.$_api.fetchArticals({ page: 0 });
     console.log("文章：", res);
     if (res.data.code) {
-      this.articals = res.data.data;
+      this.articals = res.data.data.rows;
+      console.log(`当前文章总数：${res.data.data.count}`);
     }
   },
-  methods: {}
+  methods: {},
 };
 </script>
 <style lang="less" scoped>
-.bg-vertical {
-  transform: translate3d(510%, 0, 0);
-  top: 65px;
-  position: fixed;
-  width: 10%;
-  height: auto;
-}
-
 .bg-horizontal {
   width: 100%;
   height: auto;
@@ -43,9 +35,9 @@ export default {
 }
 
 .blog-view {
-  width: 50%;
+  width: 40%;
   min-height: 90vh;
-  margin-left: 200px;
+  margin-left: 20%;
   position: relative;
 
   &-content {

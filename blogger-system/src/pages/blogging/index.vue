@@ -61,28 +61,37 @@ export default {
         alignright: true, // 右对齐
         /* 2.2.1 */
         subfield: true, // 单双栏模式
-        preview: true // 预览
+        preview: true, // 预览
       },
+      title_img: "", //文章头图
       title: "", // 博客标题
       blogContent: ``, //博客内容
-      isToolBarReachTop: false // 下滑窗口时控制工具栏始终悬浮在顶部
+      isToolBarReachTop: false, // 下滑窗口时控制工具栏始终悬浮在顶部
     };
   },
   mounted() {
+    document.scrollingElement.scrollTop = 0; //让页面滚动到最顶部
     window.addEventListener("scroll", this.scrollHandler);
     this.$bus.$on("uploadBlog", this.uploadBlog);
+  },
+  beforeDestroy() {
+    this.$bus.$off("uploadBlog");
   },
   destroyed() {
     window.removeEventListener("scroll", this.scrollHandler);
   },
   methods: {
-    // 编辑器里的图片上传
+    // 编辑器里的图片上传，说明文档：https://github.com/hinesboy/mavonEditor/blob/master/doc/cn/upload-images.md
     async imgAdd(pos, $file) {
       let formData = new FormData();
       formData.append("file", $file);
-      const img_res =  await this.$_api.uploadImg(formData);
-      console.log(img_res);
-      // 说明文档：https://github.com/hinesboy/mavonEditor/blob/master/doc/cn/upload-images.md
+      const img_res = await this.$_api.uploadImg(formData);
+      if (img_res.data.code) {
+        this.$refs.md.$img2Url(pos, `api/images/${img_res.data.data}`);
+        this.title_img = img_res.data.data;
+      } else {
+        console.log(图片上传失败);
+      }
     },
     scrollHandler(e) {
       // 下拉时将工具栏固定在顶部
@@ -94,23 +103,28 @@ export default {
       }
     },
     // 发表文章
-    uploadBlog() {
+    async uploadBlog() {
       let userMsg = JSON.parse(sessionStorage.getItem("user"));
       if (this.title && this.blogContent) {
-        this.$_api.uploadBlog({
+        const res = await this.$_api.uploadBlog({
           text_title: this.title,
           text: this.blogContent,
-          authorId: userMsg.userId
+          authorId: userMsg.userId,
+          title_img: this.title_img,
         });
+        console.log("发表文章的结果：", res);
+        if (res.data.code) {
+          this.$router.push("/home/home-page");
+        }
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="less" scoped>
 .blogging {
-  margin-left: 200px;
-  width: 900px;
+  margin-left: 20%;
+  width: 40%;
 
   .title {
     width: 96%;

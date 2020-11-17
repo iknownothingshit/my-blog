@@ -1,98 +1,36 @@
 <template>
   <!-- 评论框 -->
   <div class="comment-box-cover">
-    <div :class="['comment-box',(fade == 'in'?'fadeIn':'fadeOut')]">
+    <div class="mantle" @click="close"></div>
+    <div :class="['comment-box', fade == 'in' ? 'fadeIn' : 'fadeOut']">
       <img src="@/assets/close.png" class="close" @click="close" />
-      <h3>89条评论</h3>
+      <h3>{{ allComments.length }}条评论</h3>
       <section class="comment-box-content">
-        <div class="comment-box-content-item">
+        <div
+          class="comment-box-content-item"
+          v-for="(e, i) in allComments"
+          :key="i"
+        >
           <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
+            <img :src="`api/images/${e.user_avatars}`" alt />
+            {{ e.user_name }}
           </div>
-          <p>这发个鬼评论啦这样式怎么崩了这样式怎么崩了这样式怎么崩了这样式怎么崩了这样式怎么崩了这样式怎么崩了</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦这样式怎么崩了这样式怎么崩了这样式怎么崩了这样式怎么崩了这样式怎么崩了这样式怎么崩了</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦这样式怎么崩了这样式怎么崩了这样式怎么崩了这样式怎么崩了这样式怎么崩了这样式怎么崩了</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦</p>
-        </div>
-        <div class="comment-box-content-item">
-          <div>
-            <img src="@/assets/test.jpg" alt />
-            新建文件夹
-          </div>
-          <p>这发个鬼评论啦</p>
+          <span>{{ e.date }}</span>
+          <p>
+            {{ e.text }}
+          </p>
         </div>
       </section>
       <section class="comment-box-edit">
-        <input type="text" placeholder="写下你的评论..." v-model="comment" />
-        <button :class="{'btn-disable':(comment != '')}">发布</button>
+        <input
+          type="text"
+          placeholder="写下你的评论..."
+          v-model="comment"
+          maxlength="200"
+        />
+        <button :class="{ 'btn-disable': comment != '' }" @click="emitComment">
+          发布
+        </button>
       </section>
     </div>
   </div>
@@ -101,10 +39,13 @@
 <script>
 export default {
   components: {},
+  props: {
+    allComments: Array, // 全部评论
+  },
   data() {
     return {
       fade: "in", //设置展示和收起动画
-      comment: "" //评论内容
+      comment: "", //评论内容
     };
   },
   methods: {
@@ -114,32 +55,49 @@ export default {
         this.$parent.closeComment();
       }, 500);
       this.fade = "out";
-    }
+    },
+    // 触发父组件发表评论方法
+    emitComment() {
+      if (!this.comment || !this.comment.replace(/\s/g, "")) return;
+      this.$parent.comment(this.comment);
+      this.comment = "";
+    },
   },
   mounted() {
     // 加载组件时禁止主页面的滑动
-    let m = function(e) {
+    let m = function (e) {
       e.preventDefault();
     };
     document.body.style.overflow = "hidden";
     document.addEventListener("touchmove", m, { passive: false }); //禁止页面滑动
+    console.log("评论列表：", this.allComments);
   },
   destroyed() {
     // 组件销毁时恢复页面的滑动
-    let m = function(e) {
+    let m = function (e) {
       e.preventDefault();
     };
     document.body.style.overflow = ""; //出现滚动条
     document.removeEventListener("touchmove", m, { passive: true });
-  }
+  },
 };
 </script>
 <style lang="less" scoped>
+.mantle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
 .comment-box-cover {
   position: fixed;
   left: 0;
   top: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  // background-color: rgba(0, 0, 0, 0.6);
   z-index: 20;
   width: 100%;
   height: 100vh;
@@ -222,7 +180,7 @@ export default {
         padding: 10px 0;
 
         div {
-          width: 100%;
+          width: 80%;
           display: flex;
           justify-content: flex-start;
           align-items: center;
@@ -232,6 +190,10 @@ export default {
             height: 30px;
             margin-right: 10px;
           }
+        }
+
+        span {
+          width: 20%;
         }
 
         p {
@@ -259,6 +221,10 @@ export default {
         border-radius: 5px;
         border: 1px solid #8590a6;
         padding: 0 2%;
+      }
+
+      input:focus {
+        border: 1px solid #000;
       }
 
       button {

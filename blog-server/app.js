@@ -12,6 +12,7 @@ const filter = require('./tools/filter')
 const articals = require('./routes/articals')
 const users = require('./routes/users')
 const images = require('./routes/images')
+const comments = require('./routes/comments')
 
 // error handler
 onerror(app)
@@ -44,6 +45,7 @@ app
   .use(articals.routes())
   .use(users.routes())
   .use(images.routes())
+  .use(comments.routes())
 
 // error-handling
 app.on('error', (err, ctx) => {
